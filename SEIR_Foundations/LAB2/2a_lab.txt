@@ -16,4 +16,13 @@ Assumes you already have:
   Route53 zone from Bonus-B
   WAF already exists (you’ll replace it with CLOUDFRONT-scoped WAF below)
 
+0) CloudFront must use ACM cert in us-east-1
+CloudFront viewer certs must be in N. Virginia (us-east-1). (This is standard AWS behavior; keep it as a lab rule.)
+So you will either:
+    create a second provider alias for us-east-1, or
+    manually create cert and paste ARN (less ideal)
+
+
+
+
 
