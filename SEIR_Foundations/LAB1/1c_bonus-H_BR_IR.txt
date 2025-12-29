@@ -1,0 +1,61 @@
+Lab 1C-Bonus-H: Bedrock Auto-Generated Incident Reports
+Student Handout 
+What you’re building:
+
+When an alarm fires, you will automatically:
+  1) collect evidence (alarm metadata + Logs Insights + param/secret reads)
+  2) generate a structured incident report using Amazon Bedrock Runtime InvokeModel 
+  3) store report + evidence bundle to S3
+  4) notify the on-call engineer (SNS)
+
+Why it matters
+This is how mature companies reduce MTTR:
+  A) evidence collection is automated (less guesswork)
+  B) postmortems are consistent (better prevention)
+  C) alerts include context (fewer “what’s happening?” pages)
+
+1) The “Integration Contract” (what Lambda must output)
+You must write two objects to S3:
+
+A) Evidence bundle (JSON)
+s3://<bucket>/reports/<incident_id>.json
+
+Must contain:
+  1) incident_id
+  2) time_window_utc (start/end)
+  3) alarm (name, metric, threshold, state)
+  4) queries: results for WAF + app Logs Insights
+  5) ssm_params (endpoint/port/name)
+  6) secret_meta (host/port/dbname/username only — no password)
+
+B) Human report (Markdown)
+s3://<bucket>/reports/<incident_id>.md
+
+Must follow your template headings exactly.
+
+2) The Logs Insights Query Pack (Minimum required)
+Your Lambda must run at least these via Logs Insights:
+  App: error rate over time (bin 1m)
+  App: latest 50 DB-related error lines
+  WAF: allow vs block
+  WAF: top blocked IP/URI pairs
+
+This is built on StartQuery + GetQueryResults.
+
+3) Bedrock invocation: two supported paths (You need to pick one)
+
+Critical reality: Bedrock request bodies differ per model provider/family. 
+AWS explicitly warns that models differ in what they accept/return. 
+Documentation: https://docs.aws.amazon.com/bedrock/latest/userguide/inference-invoke.html?utm_source=chatgpt.com
+
+
+Option 1: Anthropic Claude via Bedrock “messages” style payload
+Use AWS’s own examples as the canonical reference. 
+AWS Documentation: https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-runtime_example_bedrock-runtime_InvokeModel_AnthropicClaude_section.html?utm_source=chatgpt.com
+
+
+Python snippet (framework): claude.py (folder)
+
+
+
+
