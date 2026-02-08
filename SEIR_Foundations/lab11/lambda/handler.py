@@ -1,3 +1,5 @@
+# Don't forget, you have to upload this as a zip file. 
+
 import json
 import os
 import boto3
